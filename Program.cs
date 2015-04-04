@@ -11,7 +11,7 @@ namespace ConsoleApplication5
 
         static void ChangeText(string name, string id, string year)
         {
-            
+            //add new function
         }
 
         static void Main(string[] args)
@@ -29,8 +29,8 @@ namespace ConsoleApplication5
 
               //  string afterreplace =line.Replace("${中文姓名}", );
 
-
-                Console.WriteLine(line);
+                line = String.Concat(line, '\n');  
+               // Console.WriteLine(line);
                 afterreplace = String.Concat(afterreplace, line); 
                   
 
