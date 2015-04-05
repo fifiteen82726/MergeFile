@@ -4,52 +4,102 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+//using System.Text.RegularExpressions.Regex;
+using System.Text.RegularExpressions;
 namespace ConsoleApplication5
 {
     class Program
     {
 
-        static void ChangeText(string name, string id, string year)
+        static void WriteIntoFile(string name, string id, string year , string template)
         {
-            //add new function
+            //replace template string
+            string result = template.Replace("${中文姓名}",name);
+             result = result.Replace("${身份證字號}", id);
+             result = result.Replace("${年數}", year);
+             Console.WriteLine(result);
+             using (StreamWriter writer = new StreamWriter("AllTxtFiles.txt", true))
+             {
+                 writer.Write(result);
+             }
         }
+
+        static string handletemplatefile()
+        {
+            // open template file and transfer into a string  
+            System.IO.StreamReader file = new System.IO.StreamReader("./template.txt");
+            string afterreplace = "";
+            string line ; 
+            while ((line = file.ReadLine()) != null)
+            {
+                line = String.Concat(line, "\r\n");  
+                afterreplace = String.Concat(afterreplace,line);
+            }
+            file.Close();
+            return afterreplace;
+        } 
 
         static void Main(string[] args)
         {
-            int counter = 0;
+
+          
+      
+            // read and handle the template file
+            string template = handletemplatefile();
+            
+            // clear the result file 
+            File.WriteAllText("AllTxtFiles.txt", string.Empty);
+
+            //read data file 
+
+            System.IO.StreamReader ReadData =
+            new System.IO.StreamReader("data.txt");
             string line;
-
-            // Read the file and display it line by line.
-            System.IO.StreamReader file =
-               new System.IO.StreamReader("./template.txt");
-            string afterreplace = "";
-            while ((line = file.ReadLine()) != null)
+            bool first = false;
+            string[] data = new string[6];
+            int counter=0; 
+            while ((line = ReadData.ReadLine()) != null)
             {
-                counter=0;
+                if (first == false)
+                {
+                    first = true;
+                }
+                else
+                {
+                    Regex regex = new Regex("(\t)");
+                    counter = 0;
+                    foreach (string result in regex.Split(line)) 
+                    {
+                        data[counter] = result;
+                      //  Console.WriteLine(data[counter]);
+                        counter++;
+                        
+                        
+                    }
+                    string name = data[0];
+                    string id = data[2];
+                    string year = data[4];
 
-              //  string afterreplace =line.Replace("${中文姓名}", );
+                    //write to file 
+                    WriteIntoFile(name, id, year,template); 
 
-                line = String.Concat(line, "\r\n");  
-               // Console.WriteLine(line);
-                afterreplace = String.Concat(afterreplace, line); 
-                  
-
+                    
+                }
+              
+                
 
             }
-            Console.WriteLine(afterreplace);
-             using (StreamWriter outfile = new StreamWriter("AllTxtFiles.txt"))
-            {
-                outfile.Write(afterreplace.ToString());
-            }
+           
+            counter = 0;
+            
 
-             using (StreamWriter writer = new StreamWriter("AllTxtFiles.txt", true))
-             {
-                 writer.Write("new line");
-             }
+           
+       
+          
                       // Console.WriteLine("get");
 
                 
-            file.Close();
+          
 
             // Suspend the screen.
             Console.ReadLine();
