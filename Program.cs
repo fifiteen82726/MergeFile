@@ -11,23 +11,23 @@ namespace ConsoleApplication5
     class Program
     {
 
-        static void WriteIntoFile(string name, string id, string year , string template)
+        static void WriteIntoFile(string name, string id, string year , string template , string resultfile)
         {
             //replace template string
             string result = template.Replace("${中文姓名}",name);
              result = result.Replace("${身份證字號}", id);
              result = result.Replace("${年數}", year);
-             Console.WriteLine(result);
-             using (StreamWriter writer = new StreamWriter("AllTxtFiles.txt", true))
+            // Console.WriteLine(result);
+             using (StreamWriter writer = new StreamWriter(resultfile, true))
              {
                  writer.Write(result);
              }
         }
 
-        static string handletemplatefile()
+        static string handletemplatefile(string templatefile)
         {
             // open template file and transfer into a string  
-            System.IO.StreamReader file = new System.IO.StreamReader("./template.txt");
+            System.IO.StreamReader file = new System.IO.StreamReader(templatefile);
             string afterreplace = "";
             string line ; 
             while ((line = file.ReadLine()) != null)
@@ -37,72 +37,65 @@ namespace ConsoleApplication5
             }
             file.Close();
             return afterreplace;
-        } 
+        }
 
         static void Main(string[] args)
         {
-
-          
-      
             // read and handle the template file
-            string template = handletemplatefile();
-            
-            // clear the result file 
-            File.WriteAllText("AllTxtFiles.txt", string.Empty);
 
-            //read data file 
+            // Console.WriteLine(args.Length);
 
-            System.IO.StreamReader ReadData =
-            new System.IO.StreamReader("data.txt");
-            string line;
-            bool first = false;
-            string[] data = new string[6];
-            int counter=0; 
-            while ((line = ReadData.ReadLine()) != null)
+            if (args.Length != 6)
             {
-                if (first == false)
-                {
-                    first = true;
-                }
-                else
-                {
-                    Regex regex = new Regex("(\t)");
-                    counter = 0;
-                    foreach (string result in regex.Split(line)) 
-                    {
-                        data[counter] = result;
-                      //  Console.WriteLine(data[counter]);
-                        counter++;
-                        
-                        
-                    }
-                    string name = data[0];
-                    string id = data[2];
-                    string year = data[4];
-
-                    //write to file 
-                    WriteIntoFile(name, id, year,template); 
-
-                    
-                }
-              
-                
-
+                Console.WriteLine("commad error");
             }
-           
-            counter = 0;
-            
+            else
+            {
+                string datainput = args[1];
+                string templatefile = args[3];
+                string resultfile = args[5];
 
-           
-       
-          
-                      // Console.WriteLine("get");
+                string template = handletemplatefile(templatefile);
 
-                
-          
+                // clear the result file 
+                File.WriteAllText(resultfile, string.Empty);
 
-            // Suspend the screen.
-            Console.ReadLine();
+                //read data file 
+
+                System.IO.StreamReader ReadData =
+                new System.IO.StreamReader(datainput);
+                string line;
+                bool first = false;
+                string[] data = new string[6];
+                int counter = 0;
+                while ((line = ReadData.ReadLine()) != null)
+                {
+                    if (first == false)
+                    {
+                        first = true;
+                    }
+                    else
+                    {
+                        Regex regex = new Regex("(\t)");
+                        counter = 0;
+                        foreach (string result in regex.Split(line))
+                        {
+                            data[counter] = result;
+                            //  Console.WriteLine(data[counter]);
+                            counter++;
+
+
+                        }
+                        string name = data[0];
+                        string id = data[2];
+                        string year = data[4];
+
+                        //write to file 
+                        WriteIntoFile(name, id, year, template, resultfile);
+                    }
+                }
+               // Console.ReadLine();
+            }
         }
     }
 }
