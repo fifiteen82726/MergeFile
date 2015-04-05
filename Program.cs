@@ -29,7 +29,7 @@ namespace ConsoleApplication5
 
               //  string afterreplace =line.Replace("${中文姓名}", );
 
-                line = String.Concat(line, '\n');  
+                line = String.Concat(line, "\r\n");  
                // Console.WriteLine(line);
                 afterreplace = String.Concat(afterreplace, line); 
                   
@@ -37,6 +37,15 @@ namespace ConsoleApplication5
 
             }
             Console.WriteLine(afterreplace);
+             using (StreamWriter outfile = new StreamWriter("AllTxtFiles.txt"))
+            {
+                outfile.Write(afterreplace.ToString());
+            }
+
+             using (StreamWriter writer = new StreamWriter("AllTxtFiles.txt", true))
+             {
+                 writer.Write("new line");
+             }
                       // Console.WriteLine("get");
 
                 
